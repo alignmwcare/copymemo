@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>memo</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="memo">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0idXJsKCNncmFkKSIvPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM4QjYzNDAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNEEyRTEwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB4PSIxMzYiIHk9IjE2MCIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIyOTAiIHJ4PSIyMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRURFMENDIiBzdHJva2Utd2lkdGg9IjIyIi8+CiAgPHJlY3QgeD0iMjA2IiB5PSIxMzgiIHdpZHRoPSIxMDAiIGhlaWdodD0iNDgiIHJ4PSIxOCIgZmlsbD0iI0VERTBDQyIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjE1MiIgcj0iMTYiIGZpbGw9IiM2QjRBMjgiLz4KICA8bGluZSB4MT0iMTg2IiB5MT0iMjY4IiB4Mj0iMzI2IiB5Mj0iMjY4IiBzdHJva2U9IiNFREUwQ0MiIHN0cm9rZS13aWR0aD0iMjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxsaW5lIHgxPSIxODYiIHkxPSIzMjgiIHgyPSIyOTYiIHkyPSIzMjgiIHN0cm9rZT0iI0VERTBDQyIgc3Ryb2tlLXdpZHRoPSIyMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPg==">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --surface: #FFFCF7;
+    --border: #E2D9C8;
+    --text: #3A2E1E;
+    --text-muted: #9A8E7A;
+    --accent: #8B6340;
+    --accent2: #C4956A;
+    --accent-light: #F5EAD8;
+    --tag-bg: #EDE5D8;
+    --sidebar-bg: #2C2018;
+    --sidebar-text: #C8B89A;
+    --sidebar-active-bg: #8B6340;
+    --sidebar-active-text: #FFF8F0;
+    --sidebar-w: 210px;
+    --title-color: #6B4A28;
+    --title-bg: #EDE0CC;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 18px 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .sidebar-logo-wrap {
+    width: 34px; height: 34px;
+    background: #EDE5D8;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .sidebar-title { font-size: 18px; font-weight: 800; color: #FFF8F0; }
+
+  .folder-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    color: #5A4A38; padding: 12px 16px 4px; text-transform: uppercase;
+  }
+
+  .folder-list { flex: 1; overflow-y: auto; padding-bottom: 8px; }
+
+  .folder-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; cursor: pointer; font-size: 13px;
+    color: var(--sidebar-text); border-radius: 10px;
+    margin: 2px 8px; transition: background 0.15s;
+  }
+
+  .folder-item:hover { background: rgba(255,255,255,0.06); }
+  .folder-item.active { background: var(--sidebar-active-bg); color: var(--sidebar-active-text); font-weight: 600; }
+
+  .folder-icon-wrap {
+    width: 26px; height: 26px; background: rgba(237,229,216,0.12);
+    border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .folder-item.active .folder-icon-wrap { background: rgba(255,255,255,0.18); }
+
+  .folder-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .folder-count {
+    font-size: 11px; background: rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 1px 7px; flex-shrink: 0;
+  }
+
+  .folder-item.active .folder-count { background: rgba(255,255,255,0.2); }
+
+  .folder-edit-btns { display: none; gap: 2px; }
+  .folder-item:hover .folder-edit-btns { display: flex; }
+
+  .folder-edit-btn {
+    background: none; border: none; cursor: pointer; padding: 3px;
+    border-radius: 5px; opacity: 0.6; display: flex; align-items: center; justify-content: center;
+  }
+
+  .folder-edit-btn:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+
+  .sidebar-footer { padding: 10px 12px 18px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+  .btn-new-folder {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px;
+    padding: 9px; font-size: 12px; cursor: pointer;
+    color: var(--sidebar-text); text-align: center; transition: all 0.15s;
+  }
+
+  .btn-new-folder:hover { border-color: var(--accent2); color: #fff; background: rgba(139,99,64,0.3); }
+
+  .btn-backup {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 7px 4px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--sidebar-text);
+    text-align: center;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .btn-backup:hover { border-color: var(--accent2); color: #fff; background: rgba(139,99,64,0.3); }
+
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+  header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 14px 18px 12px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(139,99,64,0.07);
+  }
+
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
+
+  .header-folder-title { font-size: 16px; font-weight: 800; color: var(--title-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .btn-add {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; border-radius: 20px; padding: 7px 16px;
+    font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(139,99,64,0.3); transition: opacity 0.15s;
+  }
+
+  .btn-add:hover { opacity: 0.88; }
+
+  .search-wrap { position: relative; }
+
+  .search-icon-pos {
+    position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+    pointer-events: none; display: flex; align-items: center;
+  }
+
+  .search-input {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 8px 10px 8px 32px; font-size: 14px; background: var(--bg);
+    color: var(--text); outline: none; transition: border-color 0.15s;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+
+  .tag-bar {
+    padding: 8px 18px; display: flex; gap: 6px; overflow-x: auto;
+    scrollbar-width: none; background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+
+  .tag-bar::-webkit-scrollbar { display: none; }
+
+  .tag-chip {
+    flex-shrink: 0; background: var(--tag-bg); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 4px 11px; font-size: 12px; cursor: pointer;
+    color: var(--text-muted); white-space: nowrap; font-weight: 500; transition: all 0.15s;
+  }
+
+  .tag-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .cards { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+
+  .count { font-size: 11px; color: var(--text-muted); padding: 8px 18px 0; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; }
+
+  .card {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 14px; cursor: pointer; position: relative; overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .card:hover { border-color: var(--accent2); box-shadow: 0 3px 12px rgba(139,99,64,0.1); }
+
+  .card-title-bar {
+    background: var(--title-bg); padding: 9px 10px 9px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; border-bottom: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 13px; font-weight: 700; color: var(--title-color);
+    line-height: 1.3; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .card-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+  .icon-btn {
+    background: rgba(255,255,255,0.75); border: 1.5px solid var(--border);
+    cursor: pointer; width: 30px; height: 30px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  }
+
+  .icon-btn:hover { transform: scale(1.08); }
+  .icon-btn.move:hover { background: #F0E8D5; border-color: var(--accent2); }
+  .icon-btn.edit:hover { background: #D8EAF0; border-color: #7AAFC0; }
+  .icon-btn.del:hover  { background: #F5DADA; border-color: #C07A7A; }
+
+  .card-inner { padding: 11px 14px 13px; }
+
+  .card-body { font-size: 14px; line-height: 1.65; color: var(--text); white-space: pre-wrap; word-break: break-all; }
+
+  .card-footer { margin-top: 9px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+
+  .card-tag { background: var(--accent-light); color: var(--accent); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
+
+  .card-folder-badge {
+    background: var(--tag-bg); color: var(--text-muted); border-radius: 6px;
+    padding: 2px 8px; font-size: 11px; font-weight: 500;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .copy-flash {
+    position: absolute; inset: 0; border-radius: 14px;
+    background: rgba(196,149,106,0.14); display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--accent);
+    opacity: 0; pointer-events: none; transition: opacity 0.15s; backdrop-filter: blur(2px);
+  }
+
+  .copy-flash.show { opacity: 1; }
+
+  .empty { text-align: center; padding: 56px 16px; color: var(--text-muted); font-size: 14px; line-height: 1.8; }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(30,20,10,0.45);
+    z-index: 200; align-items: flex-end; justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    padding: 22px 18px 34px; width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto;
+  }
+
+  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+
+  .modal-title { font-size: 16px; font-weight: 800; color: var(--title-color); margin-bottom: 16px; }
+
+  label {
+    display: block; font-size: 11px; font-weight: 700; color: var(--text-muted);
+    margin-bottom: 5px; margin-top: 14px; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit; color: var(--text);
+    background: var(--bg); outline: none; resize: vertical; appearance: none; transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { min-height: 110px; }
+
+  .tag-input-row { display: flex; gap: 6px; }
+  .tag-input-row input { flex: 1; }
+
+  .btn-tag-add {
+    background: var(--tag-bg); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; font-size: 13px; cursor: pointer; flex-shrink: 0;
+    color: var(--accent); font-weight: 600; transition: background 0.15s;
+  }
+
+  .btn-tag-add:hover { background: var(--accent-light); }
+
+  .modal-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+
+  .modal-tag {
+    background: var(--accent-light); color: var(--accent); border-radius: 6px;
+    padding: 4px 9px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px;
+  }
+
+  .modal-tag .rm { cursor: pointer; opacity: 0.6; font-size: 13px; }
+  .modal-tag .rm:hover { opacity: 1; }
+
+  .tag-suggestions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+
+  .tag-suggest-chip {
+    background: var(--tag-bg); border: 1.5px solid var(--border); border-radius: 20px;
+    padding: 3px 10px; font-size: 11px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.1s;
+  }
+
+  .tag-suggest-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+  .modal-footer { display: flex; gap: 8px; margin-top: 22px; }
+
+  .btn-save {
+    flex: 1; background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; border-radius: 12px; padding: 13px;
+    font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(139,99,64,0.25);
+  }
+
+  .btn-cancel {
+    background: var(--tag-bg); color: var(--text-muted); border: none;
+    border-radius: 12px; padding: 13px 20px; font-size: 15px; cursor: pointer; font-weight: 600;
+  }
+
+  .move-folder-list { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+
+  .move-folder-btn {
+    width: 100%; text-align: left; background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 11px 14px; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; color: var(--text); transition: all 0.15s; font-weight: 500;
+  }
+
+  .move-folder-btn:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+  .move-folder-btn.current { border-color: var(--accent); background: var(--accent-light); color: var(--accent); font-weight: 700; }
+
+  @media (max-width: 520px) { :root { --sidebar-w: 170px; } }
+</style>
+</head>
+<body>
+
+<!-- SVG Icons (line-art style) -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="i-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 8h1a4 4 0 010 8h-1"/>
+      <path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/>
+      <line x1="6" y1="2" x2="6" y2="4"/>
+      <line x1="10" y1="2" x2="10" y2="4"/>
+      <line x1="14" y1="2" x2="14" y2="4"/>
+    </symbol>
+    <symbol id="i-all" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="14" width="18" height="7" rx="1.5"/>
+      <rect x="5" y="8" width="14" height="7" rx="1.5"/>
+      <rect x="7" y="3" width="10" height="6" rx="1.5"/>
+    </symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="4 12 4 20 20 20 20 12"/>
+      <path d="M4 12h4l2 3h4l2-3h4"/>
+      <polyline points="16 6 12 2 8 6"/>
+      <line x1="12" y1="2" x2="12" y2="13"/>
+    </symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 8c0-1.1.9-2 2-2h4.2l1.8 2H19a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+    </symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 3 21l.5-4.5L17 3z"/>
+    </symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <circle cx="11" cy="11" r="7"/>
+      <line x1="16.5" y1="16.5" x2="21" y2="21"/>
+    </symbol>
+    <symbol id="i-move" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 8c0-1.1.9-2 2-2h4l2 2h5a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+      <line x1="12" y1="14" x2="18" y2="14"/>
+      <polyline points="15 11 18 14 15 17"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <span class="sidebar-title">memo</span>
+  </div>
+  <div class="folder-section-label">フォルダ</div>
+  <div class="folder-list" id="folderList"></div>
+  <div class="sidebar-footer">
+    <button class="btn-new-folder" onclick="newFolder()">＋ フォルダを追加</button>
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button class="btn-backup" onclick="backupData()" title="バックアップ">
+        <svg width="13" height="13" style="color:currentColor"><use href="#i-move"/></svg>
+        バックアップ
+      </button>
+      <button class="btn-backup" onclick="restoreData()" title="復元">
+        復元
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <header>
+    <div class="header-top">
+      <div class="header-folder-title" id="headerTitle">すべて</div>
+      <button class="btn-add" onclick="openMemoModal()">＋ 追加</button>
+    </div>
+    <div class="search-wrap">
+      <div class="search-icon-pos">
+        <svg width="15" height="15" style="color:#9A8E7A"><use href="#i-search"/></svg>
+      </div>
+      <input class="search-input" type="text" placeholder="検索..." id="searchInput" oninput="render()">
+    </div>
+  </header>
+  <div class="tag-bar" id="tagBar"></div>
+  <div class="count" id="countLabel"></div>
+  <div class="cards" id="cards"></div>
+</div>
+
+<!-- Memo Modal -->
+<div class="modal-overlay" id="memoOverlay" onclick="overlayClick(event,'memoOverlay')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="memoModalTitle">メモを追加</div>
+    <label>タイトル（任意）</label>
+    <input type="text" id="mTitle" placeholder="例：退院指導文">
+    <label>本文</label>
+    <textarea id="mBody" placeholder="コピーしたいテキストを入力..."></textarea>
+    <label>フォルダ</label>
+    <select id="mFolder"></select>
+    <label>タグ</label>
+    <div class="tag-input-row">
+      <input type="text" id="mTagInput" placeholder="タグを入力" onkeydown="tagKeydown(event)">
+      <button class="btn-tag-add" onclick="addTag()">追加</button>
+    </div>
+    <div class="tag-suggestions" id="tagSuggestions"></div>
+    <div class="modal-tags" id="modalTags"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeMemoModal()">キャンセル</button>
+      <button class="btn-save" onclick="saveMemo()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Move Modal -->
+<div class="modal-overlay" id="moveOverlay" onclick="overlayClick(event,'moveOverlay')">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-handle"></div>
+    <div class="modal-title">フォルダを移動</div>
+    <div class="move-folder-list" id="moveFolderList"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeMoveModal()">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- Folder Name Modal -->
+<div class="modal-overlay" id="folderNameOverlay" onclick="overlayClick(event,'folderNameOverlay')">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="folderNameTitle">フォルダ名</div>
+    <label>フォルダ名</label>
+    <input type="text" id="folderNameInput" placeholder="例：カルテ文言" onkeydown="folderNameKeydown(event)">
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeFolderNameModal()">キャンセル</button>
+      <button class="btn-save" onclick="saveFolderName()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MEMO_KEY='copimemo_memos_v2', FOLDER_KEY='copimemo_folders_v2';
+let memos=[], folders=[];
+let editMemoId=null, currentTags=[];
+let activeTagFilter=null, activeFolderId=null;
+let movingMemoId=null, folderEditId=null;
+
+function ico(id,size=16,color='currentColor'){
+  return `<svg width="${size}" height="${size}" style="color:${color};display:block;flex-shrink:0"><use href="#${id}"/></svg>`;
+}
+
+function load(){
+  try{memos=JSON.parse(localStorage.getItem(MEMO_KEY))||[];}catch{memos=[];}
+  try{folders=JSON.parse(localStorage.getItem(FOLDER_KEY))||[];}catch{folders=[];}
+}
+
+function persist(){
+  localStorage.setItem(MEMO_KEY,JSON.stringify(memos));
+  localStorage.setItem(FOLDER_KEY,JSON.stringify(folders));
+}
+
+function allTagsInView(){
+  const set=new Set();
+  const src=activeFolderId===null?memos:activeFolderId==='uncategorized'?memos.filter(m=>!m.folderId):memos.filter(m=>m.folderId===activeFolderId);
+  src.forEach(m=>(m.tags||[]).forEach(t=>set.add(t)));
+  return [...set].sort();
+}
+
+function folderName(id){if(!id)return '未分類';return folders.find(f=>f.id===id)?.name||'未分類';}
+
+function render(){renderSidebar();renderTagBar();renderCards();}
+
+function renderSidebar(){
+  const list=document.getElementById('folderList');list.innerHTML='';
+  list.appendChild(makeFolderItem(null,'i-all','すべて',memos.length));
+  const noF=memos.filter(m=>!m.folderId).length;
+  if(noF>0||activeFolderId==='uncategorized')
+    list.appendChild(makeFolderItem('uncategorized','i-inbox','未分類',noF));
+  folders.forEach(f=>list.appendChild(makeFolderItem(f.id,'i-folder',f.name,memos.filter(m=>m.folderId===f.id).length,f.id)));
+}
+
+function makeFolderItem(id,iconId,name,count,editableId){
+  const div=document.createElement('div');
+  div.className='folder-item'+(activeFolderId===id?' active':'');
+  div.onclick=()=>{activeFolderId=id;activeTagFilter=null;render();};
+  const c=activeFolderId===id?'#FFF8F0':'#C8B89A';
+  div.innerHTML=`<div class="folder-icon-wrap">${ico(iconId,14,c)}</div><span class="folder-name">${name}</span><span class="folder-count">${count}</span>`;
+  if(editableId){
+    const acts=document.createElement('div');acts.className='folder-edit-btns';
+    const rb=document.createElement('button');rb.className='folder-edit-btn';rb.title='リネーム';
+    rb.innerHTML=ico('i-pencil',13,'#C8B89A');rb.onclick=e=>{e.stopPropagation();openFolderNameModal(editableId);};
+    const db=document.createElement('button');db.className='folder-edit-btn';db.title='削除';
+    db.innerHTML=ico('i-trash',13,'#C8B89A');db.onclick=e=>{e.stopPropagation();deleteFolder(editableId);};
+    acts.append(rb,db);div.appendChild(acts);
+  }
+  return div;
+}
+
+function renderTagBar(){
+  const tags=allTagsInView();const bar=document.getElementById('tagBar');bar.innerHTML='';
+  if(tags.length===0){bar.style.display='none';return;}bar.style.display='flex';
+  const all=document.createElement('div');all.className='tag-chip'+(activeTagFilter===null?' active':'');
+  all.textContent='すべて';all.onclick=()=>{activeTagFilter=null;render();};bar.appendChild(all);
+  tags.forEach(t=>{const c=document.createElement('div');c.className='tag-chip'+(activeTagFilter===t?' active':'');
+    c.textContent=t;c.onclick=()=>{activeTagFilter=activeTagFilter===t?null:t;render();};bar.appendChild(c);});
+}
+
+function renderCards(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  let title='すべて';
+  if(activeFolderId==='uncategorized')title='未分類';
+  else if(activeFolderId)title=folderName(activeFolderId);
+  document.getElementById('headerTitle').textContent=title;
+
+  const filtered=memos.filter(m=>{
+    const mf=activeFolderId===null?true:activeFolderId==='uncategorized'?!m.folderId:m.folderId===activeFolderId;
+    const mt=activeTagFilter===null||(m.tags||[]).includes(activeTagFilter);
+    const mq=!q||(m.title||'').toLowerCase().includes(q)||(m.body||'').toLowerCase().includes(q)||(m.tags||[]).some(t=>t.toLowerCase().includes(q));
+    return mf&&mt&&mq;
+  });
+
+  document.getElementById('countLabel').textContent=`${filtered.length} 件`;
+  const container=document.getElementById('cards');
+
+  if(filtered.length===0){container.innerHTML=`<div class="empty"><div class="empty-icon">🌿</div>メモがありません<br>「＋ 追加」から登録してください</div>`;return;}
+
+  container.innerHTML='';
+  filtered.forEach(m=>{
+    const card=document.createElement('div');card.className='card';
+
+    const tb=document.createElement('div');tb.className='card-title-bar';
+    const te=document.createElement('div');te.className='card-title';te.textContent=m.title||'無題';
+    const acts=document.createElement('div');acts.className='card-actions';
+
+    const mv=document.createElement('button');mv.className='icon-btn move';mv.title='フォルダ移動';
+    mv.innerHTML=ico('i-move',15,'#8B6340');mv.onclick=e=>{e.stopPropagation();openMoveModal(m.id);};
+
+    const ed=document.createElement('button');ed.className='icon-btn edit';ed.title='編集';
+    ed.innerHTML=ico('i-pencil',15,'#5A8FA0');ed.onclick=e=>{e.stopPropagation();openMemoModal(m.id);};
+
+    const dl=document.createElement('button');dl.className='icon-btn del';dl.title='削除';
+    dl.innerHTML=ico('i-trash',15,'#C07A7A');dl.onclick=e=>{e.stopPropagation();deleteMemo(m.id);};
+
+    acts.append(mv,ed,dl);tb.append(te,acts);
+
+    const inner=document.createElement('div');inner.className='card-inner';
+    const body=document.createElement('div');body.className='card-body';body.textContent=m.body;inner.appendChild(body);
+
+    const footer=document.createElement('div');footer.className='card-footer';
+    if(activeFolderId===null&&m.folderId){
+      const fb=document.createElement('div');fb.className='card-folder-badge';
+      fb.innerHTML=ico('i-folder',12,'#9A8E7A')+folderName(m.folderId);footer.appendChild(fb);
+    }
+    (m.tags||[]).forEach(t=>{const tag=document.createElement('div');tag.className='card-tag';tag.textContent='# '+t;footer.appendChild(tag);});
+    if(footer.children.length>0)inner.appendChild(footer);
+
+    const flash=document.createElement('div');flash.className='copy-flash';flash.textContent='コピーしました ✓';
+    card.append(tb,inner,flash);
+
+    card.onclick=()=>{
+      navigator.clipboard.writeText(m.body).then(()=>{flash.classList.add('show');setTimeout(()=>flash.classList.remove('show'),800);})
+      .catch(()=>{const ta=document.createElement('textarea');ta.value=m.body;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);flash.classList.add('show');setTimeout(()=>flash.classList.remove('show'),800);});
+    };
+    container.appendChild(card);
+  });
+}
+
+function newFolder(){openFolderNameModal(null);}
+
+function deleteFolder(id){
+  if(!confirm('フォルダを削除しますか？\nメモは未分類に移動されます'))return;
+  folders=folders.filter(f=>f.id!==id);memos.forEach(m=>{if(m.folderId===id)m.folderId=null;});
+  if(activeFolderId===id)activeFolderId=null;persist();render();
+}
+
+function openFolderNameModal(id){
+  folderEditId=id;
+  document.getElementById('folderNameTitle').textContent=id?'フォルダ名を変更':'新しいフォルダ';
+  document.getElementById('folderNameInput').value=id?(folders.find(f=>f.id===id)?.name||''):'';
+  document.getElementById('folderNameOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('folderNameInput').focus(),100);
+}
+
+function closeFolderNameModal(){document.getElementById('folderNameOverlay').classList.remove('open');folderEditId=null;}
+function folderNameKeydown(e){if(e.key==='Enter')saveFolderName();}
+
+function saveFolderName(){
+  const name=document.getElementById('folderNameInput').value.trim();if(!name)return;
+  if(folderEditId){const f=folders.find(x=>x.id===folderEditId);if(f)f.name=name;}
+  else folders.push({id:'f'+Date.now(),name});
+  persist();closeFolderNameModal();render();
+}
+
+function openMoveModal(memoId){
+  movingMemoId=memoId;const m=memos.find(x=>x.id===memoId);const cur=m?.folderId||null;
+  const list=document.getElementById('moveFolderList');list.innerHTML='';
+  const ub=document.createElement('button');ub.className='move-folder-btn'+(cur===null?' current':'');
+  ub.innerHTML=ico('i-inbox',18,'#8B6340')+'未分類';ub.onclick=()=>doMove(null);list.appendChild(ub);
+  folders.forEach(f=>{
+    const btn=document.createElement('button');btn.className='move-folder-btn'+(cur===f.id?' current':'');
+    btn.innerHTML=ico('i-folder',18,'#8B6340')+f.name;btn.onclick=()=>doMove(f.id);list.appendChild(btn);
+  });
+  document.getElementById('moveOverlay').classList.add('open');
+}
+
+function doMove(folderId){const m=memos.find(x=>x.id===movingMemoId);if(m)m.folderId=folderId;persist();closeMoveModal();render();}
+function closeMoveModal(){document.getElementById('moveOverlay').classList.remove('open');movingMemoId=null;}
+
+function openMemoModal(id){
+  editMemoId=id||null;currentTags=[];
+  document.getElementById('mTitle').value='';document.getElementById('mBody').value='';document.getElementById('mTagInput').value='';
+  document.getElementById('memoModalTitle').textContent=id?'メモを編集':'メモを追加';
+  const sel=document.getElementById('mFolder');sel.innerHTML='<option value="">未分類</option>';
+  folders.forEach(f=>{const o=document.createElement('option');o.value=f.id;o.textContent=f.name;sel.appendChild(o);});
+  if(id){const m=memos.find(x=>x.id===id);if(m){document.getElementById('mTitle').value=m.title||'';document.getElementById('mBody').value=m.body||'';sel.value=m.folderId||'';currentTags=[...(m.tags||[])];}}
+  else if(activeFolderId&&activeFolderId!=='uncategorized')sel.value=activeFolderId;
+  renderModalTags();renderTagSuggestions();
+  document.getElementById('memoOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('mBody').focus(),100);
+}
+
+function closeMemoModal(){document.getElementById('memoOverlay').classList.remove('open');editMemoId=null;currentTags=[];}
+
+function saveMemo(){
+  const title=document.getElementById('mTitle').value.trim();
+  const body=document.getElementById('mBody').value.trim();
+  const folderId=document.getElementById('mFolder').value||null;
+  if(!body){document.getElementById('mBody').focus();return;}
+  if(editMemoId){const m=memos.find(x=>x.id===editMemoId);if(m){m.title=title;m.body=body;m.tags=[...currentTags];m.folderId=folderId;}}
+  else memos.unshift({id:Date.now().toString(),title,body,tags:[...currentTags],folderId});
+  persist();closeMemoModal();render();
+}
+
+function deleteMemo(id){if(!confirm('削除しますか？'))return;memos=memos.filter(m=>m.id!==id);persist();render();}
+
+function tagKeydown(e){if(e.key==='Enter'){e.preventDefault();addTag();}}
+
+function addTag(){
+  const input=document.getElementById('mTagInput');const val=input.value.trim();
+  if(!val||currentTags.includes(val)){input.value='';return;}
+  currentTags.push(val);input.value='';renderModalTags();renderTagSuggestions();
+}
+
+function removeTag(t){currentTags=currentTags.filter(x=>x!==t);renderModalTags();}
+
+function renderModalTags(){
+  const div=document.getElementById('modalTags');div.innerHTML='';
+  currentTags.forEach(t=>{
+    const chip=document.createElement('div');chip.className='modal-tag';
+    chip.innerHTML=`# ${t} <span class="rm" onclick="removeTag('${t.replace(/'/g,"\\'")}')">×</span>`;
+    div.appendChild(chip);
+  });
+}
+
+function renderTagSuggestions(){
+  const all=new Set();memos.forEach(m=>(m.tags||[]).forEach(t=>all.add(t)));
+  const div=document.getElementById('tagSuggestions');div.innerHTML='';
+  [...all].filter(t=>!currentTags.includes(t)).forEach(t=>{
+    const chip=document.createElement('div');chip.className='tag-suggest-chip';chip.textContent='# '+t;
+    chip.onclick=()=>{if(!currentTags.includes(t)){currentTags.push(t);renderModalTags();renderTagSuggestions();}};
+    div.appendChild(chip);
+  });
+}
+
+function overlayClick(e,id){
+  if(e.target!==document.getElementById(id))return;
+  if(id==='memoOverlay')closeMemoModal();
+  else if(id==='moveOverlay')closeMoveModal();
+  else if(id==='folderNameOverlay')closeFolderNameModal();
+}
+
+load();render();
+
+function backupData(){
+  const data = {
+    memos: memos,
+    folders: folders,
+    date: new Date().toISOString()
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateStr = new Date().toLocaleDateString('ja-JP').replace(/\//g,'-');
+  a.href = url;
+  a.download = `memo_backup_${dateStr}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function restoreData(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.memos || !data.folders) { alert('ファイルが正しくありません'); return; }
+        if (!confirm(`バックアップを復元しますか？\n現在のデータは上書きされます。\n（メモ${data.memos.length}件・フォルダ${data.folders.length}件）`)) return;
+        memos = data.memos;
+        folders = data.folders;
+        persist();
+        render();
+        alert('復元しました！');
+      } catch {
+        alert('ファイルの読み込みに失敗しました');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(() => console.log('SW registered'))
+    .catch(err => console.warn('SW registration failed:', err));
+}
+</script>
+</body>
+</html>

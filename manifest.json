@@ -1,0 +1,15 @@
+{
+  "name": "memo",
+  "short_name": "memo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F0E8",
+  "theme_color": "#8B6340",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMCIgZmlsbD0idXJsKCNncmFkKSIvPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM4QjYzNDAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNEEyRTEwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB4PSIxMzYiIHk9IjE2MCIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIyOTAiIHJ4PSIyMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRURFMENDIiBzdHJva2Utd2lkdGg9IjIyIi8+CiAgPHJlY3QgeD0iMjA2IiB5PSIxMzgiIHdpZHRoPSIxMDAiIGhlaWdodD0iNDgiIHJ4PSIxOCIgZmlsbD0iI0VERTBDQyIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjE1MiIgcj0iMTYiIGZpbGw9IiM2QjRBMjgiLz4KICA8bGluZSB4MT0iMTg2IiB5MT0iMjY4IiB4Mj0iMzI2IiB5Mj0iMjY4IiBzdHJva2U9IiNFREUwQ0MiIHN0cm9rZS13aWR0aD0iMjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxsaW5lIHgxPSIxODYiIHkxPSIzMjgiIHgyPSIyOTYiIHkyPSIzMjgiIHN0cm9rZT0iI0VERTBDQyIgc3Ryb2tlLXdpZHRoPSIyMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
