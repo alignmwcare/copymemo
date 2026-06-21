@@ -1,12 +1,12 @@
-const CACHE = 'memo-v3';
-
+const CACHE = 'memo-v4';
+ 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(['/index.html']))
+    caches.open(CACHE).then(c => c.addAll(['./']))
   );
   self.skipWaiting();
 });
-
+ 
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -15,12 +15,9 @@ self.addEventListener('activate', e => {
   );
   self.clients.claim();
 });
-
+ 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match('/index.html').then(cached => {
-      if (cached) return cached;
-      return fetch(e.request);
-    })
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
