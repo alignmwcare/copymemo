@@ -1,0 +1,10 @@
+name = "copymemo"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[assets]
+directory = "."
+
+[[kv_namespaces]]
+binding = "MEMO_STORE"
+id = "3f2232f31c6c455692a58750f5d02024"

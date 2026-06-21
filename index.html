@@ -400,13 +400,18 @@
   <div class="sidebar-footer">
     <button class="btn-new-folder" onclick="newFolder()">＋ フォルダを追加</button>
     <div style="display:flex;gap:6px;margin-top:8px;">
-      <button class="btn-backup" onclick="backupData()" title="バックアップ">
-        <svg width="13" height="13" style="color:currentColor"><use href="#i-move"/></svg>
-        バックアップ
-      </button>
-      <button class="btn-backup" onclick="restoreData()" title="復元">
-        復元
-      </button>
+      <button class="btn-backup" onclick="backupData()" title="バックアップ">バックアップ</button>
+      <button class="btn-backup" onclick="restoreData()" title="復元">復元</button>
+    </div>
+    <div style="margin-top:8px;background:rgba(255,255,255,0.05);border-radius:10px;padding:10px;">
+      <div style="color:#C8B89A;font-size:11px;font-weight:700;margin-bottom:7px;letter-spacing:0.5px;">☁️ クラウド同期</div>
+      <input id="syncPinInput" type="password" placeholder="同期PINを入力"
+        style="width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 10px;font-size:13px;color:#FFF8F0;outline:none;margin-bottom:7px;">
+      <div style="display:flex;gap:6px;">
+        <button onclick="doCloudUpload()" style="flex:1;background:#8B6340;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;padding:8px 4px;cursor:pointer;">⬆️ 端末→クラウド</button>
+        <button onclick="doCloudDownload()" style="flex:1;background:#4A7A6A;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;padding:8px 4px;cursor:pointer;">⬇️ クラウド→端末</button>
+      </div>
+      <div id="syncMsg" style="text-align:center;font-size:12px;font-weight:500;margin-top:6px;display:none;"></div>
     </div>
   </div>
 </div>
@@ -710,6 +715,45 @@ function overlayClick(e,id){
   if(id==='memoOverlay')closeMemoModal();
   else if(id==='moveOverlay')closeMoveModal();
   else if(id==='folderNameOverlay')closeFolderNameModal();
+}
+
+// ── クラウド同期 ──
+const SYNC_URL = '/api/sync';
+function showSyncMsg(msg, ok=true) {
+  const el = document.getElementById('syncMsg');
+  el.textContent = msg;
+  el.style.color = ok ? '#6BAA7A' : '#C07A7A';
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+async function doCloudUpload() {
+  const pin = document.getElementById('syncPinInput').value.trim();
+  if (!pin) { showSyncMsg('PINを入力してください', false); return; }
+  try {
+    const data = JSON.stringify({ memos, folders, exportedAt: Date.now() });
+    const r = await fetch(SYNC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-sync-pin': pin },
+      body: data
+    });
+    const j = await r.json();
+    if (r.ok) showSyncMsg('✅ クラウドに保存しました');
+    else showSyncMsg('❌ ' + (j.error || 'エラー'), false);
+  } catch(e) { showSyncMsg('❌ 通信エラー', false); }
+}
+async function doCloudDownload() {
+  const pin = document.getElementById('syncPinInput').value.trim();
+  if (!pin) { showSyncMsg('PINを入力してください', false); return; }
+  try {
+    const r = await fetch(SYNC_URL, { headers: { 'x-sync-pin': pin } });
+    if (!r.ok) { const j = await r.json(); showSyncMsg('❌ ' + (j.error || 'エラー'), false); return; }
+    const p = await r.json();
+    const m = p.memos || [], f = p.folders || [];
+    if (!Array.isArray(m) || m.length === 0) { showSyncMsg('クラウドにデータがありません', false); return; }
+    memos = m; if (f.length) folders = f;
+    persist(); render();
+    showSyncMsg('✅ ' + m.length + '件を同期しました');
+  } catch(e) { showSyncMsg('❌ 通信エラー', false); }
 }
 
 load();render();
