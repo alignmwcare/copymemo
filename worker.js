@@ -1,4 +1,4 @@
-const SYNC_PIN = 'memo2024'; // ← あとで変更してください
+const SYNC_PIN = '7kurinton'; // ← あとで変更してください
 
 export default {
   async fetch(request, env) {
