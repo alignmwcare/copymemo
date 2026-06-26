@@ -1,4 +1,4 @@
-const CACHE = 'memo-v5';
+const CACHE = 'memo-v7';
 
 self.addEventListener('install', e => {
   e.waitUntil(
